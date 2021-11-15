@@ -1,0 +1,207 @@
+﻿
+@model ContactInfoListViewModel
+
+<style>
+    .pb-contact-info-input {
+        background: #9ac1e32e !important;
+        color: #1c7bcd !important;
+        border: none;
+        outline: none;
+        height: 36px;
+        font-size: 16px;
+    }
+
+        .pb-contact-info-input :focus {
+            background: #9ac1e32e !important;
+            color: #1c7bcd !important;
+            border-color: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+    .pb-contact-info-label {
+        color: #1760a9;
+        font-size: 14px;
+        margin-left: 4px;
+        font-weight: 600;
+    }
+</style>
+
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">@Model.ContactFullName</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div>
+                <div class="row">
+                    <form asp-action="createContactInfoForm" method="post">
+                        <input type="hidden" asp-for="ContactId" />
+                        <div class="row" style=" margin: 0px 30px;">
+                            <div class="form-row" style="display: contents;">
+                                <div class="form-group col-md-6">
+                                    @*<label class="pb-contact-info-label" for="inputEmail4">Telefon</label>*@
+                                    <input type="text" class="pb-contact-info-input form-control" id="phoneNumber" asp-for="ContactInfo.PhoneNumber" placeholder="Telefon Numarası">
+                                    <span asp-validation-for="ContactInfo.PhoneNumber" class="text-danger"></span>
+
+                                </div>
+                                <div class="form-group col-md-6">
+                                    @*<label class="pb-contact-info-label" for="inputPassword4">E-Mail</label>*@
+                                    <input type="text" class="pb-contact-info-input form-control" id="email" asp-for="ContactInfo.EMailAddress" placeholder="E-Mail">
+                                    <span asp-validation-for="ContactInfo.EMailAddress" class="text-danger"></span>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row" style=" margin: 0px 30px">
+                            <div class="form-row" style="display: contents;">
+                                <div class="form-group col-md-6">
+                                    @*<label class="pb-contact-info-label" for="inputEmail4">Konum</label>*@
+                                    <input type="text" class="pb-contact-info-input form-control" id="location" asp-for="ContactInfo.Location" placeholder="Konum">
+                                    <span asp-validation-for="ContactInfo.Location" class="text-danger"></span>
+
+                                </div>
+                                <div class="form-group col-md-6 text-md-right">
+                                    <button type="submit" id="saveContactInfo" class="btn btn-primary">Kaydet</button>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </form>
+                </div>
+                <hr />
+                @if (true)
+                {
+                    <div id="contactInfoContainer">
+                        @foreach (var contactInfo in Model.ContactInfoList)
+                        {
+                            var parentId = $"contactInfo_{contactInfo.Id}";
+                            <div class="row" style="display: contents;" id="@parentId">
+                                <div class="pb-contact-item-card card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-9">
+                                                <div class="pb-contact-name">
+                                                    <span>@contactInfo.PhoneNumber</span>
+                                                    <span> @string.Format($"{(string.IsNullOrEmpty(contactInfo.EMailAddress) ? "" : $"({contactInfo.EMailAddress})")}") </span>
+                                                </div>
+                                                <div class="pb-contact-company">
+                                                    <span>@contactInfo.Location</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 text-right">
+
+                                                <div class="pb-contact-info-delete pb-contact-icon pb-contact-icon-delete"
+                                                     data-contactinfoid="@contactInfo.Id">
+                                                    <i class="fa fa-trash" data-contactinfoid="@contactInfo.Id"></i>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-danger">Kayıtlı iletişim bilgisi bulunamadı.</div>
+                }
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(".pb-contact-info-delete").click(function (e) {
+        e.preventDefault();
+        var contactInfoId = e.target.getAttribute("data-contactinfoid");
+        var parentId = '#contactInfo_' + contactInfoId;
+
+        $.ajax({
+            url: '@Url.Action("Delete")/' + contactInfoId,
+            type: 'DELETE',
+            //data: {
+            //    "contactInfoId": contactInfoId
+            //},
+            success: function (result) {
+                if (!result.success) {
+                    return;
+                }
+
+                $(parentId).remove();
+                GetAllContactInfo();
+            }
+        });
+    })
+
+        $("#saveContactInfo").click(function (e) {
+            e.preventDefault();
+            var formData = $("#createContactInfoForm").serialize();
+            //to get alert popup
+            var info = new Object();
+            info.PhoneNumber = $('#phoneNumber').val();
+            info.EMailAddress = $('#email').val();
+            info.Location = $('#location').val();
+            info.ContactId = @Model.ContactId;
+
+            $.ajax({
+                url: "@Url.Action("Add","ContactInfo")",
+                type: "POST",
+                dataType: 'json',
+                data: info,
+                success: function (result) {
+                    if (!result.isSuccessful) {
+                        return;
+                    }
+                    GetAllContactInfo();
+                }
+            });
+        });
+
+        function GetAllContactInfo() {
+            var getAllUrl = "@Url.Action("GetAll","ContactInfo")/" + @Model.ContactId;
+                    $.get(getAllUrl, function (data) {
+                        debugger;
+                        $("#contactInfoContainer").html('');
+                        for (var i = 0; i < data.length; i++) {
+                            var contactInfo = data[i];
+                            var html = `<div class="row" style="display: contents;" id="contactInfo_${contactInfo.id}">
+                                <div class="pb-contact-item-card card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-9">
+                                                <div class="pb-contact-name">
+                                                    <span>${contactInfo.phoneNumber}</span>
+                                                    <span> ${contactInfo.eMailAddress}</span>
+                                                </div>
+                                                <div class="pb-contact-company">
+                                                    <span>${contactInfo.location}</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 text-right">
+
+                                                <div class="pb-contact-info-delete pb-contact-icon pb-contact-icon-delete"
+                                                     data-contactinfoid="${contactInfo.id}">
+                                                    <i class="fa fa-trash" data-contactinfoid="${contactInfo.id}"></i>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+                            $("#contactInfoContainer").append(html);
+                        }
+
+                    });
+        }
+</script>
