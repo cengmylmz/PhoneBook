@@ -13,13 +13,13 @@ Bilgisayarınızda hızlıca çalıştırmak için [docker](https://docs.docker.
 Ardından komut satırı üzerinde aşağıdaki komutları çalıştırınız.
 
 # Postgres için
-`docker run --name phonebokpostgres -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=123456 -p 5432:5432 -d postgres`
+`docker run --name phonebookpostgres -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=123456 -p 5432:5432 -d postgres`
 
 # RabbitMQ için
-`docker run -d  --name phonebokrabbitmq  -p 5672:5672 -p 15672:15672 rabbitmq:3-management`
+`docker run -d  --name phonebookrabbitmq  -p 5672:5672 -p 15672:15672 rabbitmq:3-management`
 
 # Mongodb için
-`docker run --name phonebokmongodb -d -p 27017:27017 mongo`
+`docker run --name phonebookmongodb -d -p 27017:27017 mongo`
 
 
 Yukarıdaki komutları başarılı bir şekilde çalıştırdığınızda, <br/><br/>
