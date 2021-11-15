@@ -27,7 +27,14 @@ Yukarıdaki komutları başarılı bir şekilde çalıştırdığınızda, <br/>
 <img src="https://i.ibb.co/vjKSBS8/s5.png" alt="s5" border="0"><br/>
 
 **2.** Uygulamayı run ettiğinizde çalışacak projeleri aşağıda yer alan görseldeki gibi ayarlayınız.<br/>
-<img src="https://i.ibb.co/WFB0sD4/s4.png" alt="s4" border="0">
+- PhoneBook.Gateway
+- PhoneBook.Contacts.Host
+- PhoneBook.Reports.Host
+- PhoneBook.UI
+- PhoneBook.GenerateExcel.WorkerService
+
+<br/>
+<img src="https://i.ibb.co/qd6ZyPj/s6.png" alt="s6" border="0">
 
 
 Uygulamayı çalıştırdığınızda http://localhost:5010 adresinden erişim sağlayabileceksiniz.
